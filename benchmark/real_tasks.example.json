@@ -1,0 +1,37 @@
+[
+  {
+    "task_id": "github_cart_smoke",
+    "repo_url": "https://github.com/36-gift/RepoFix-discovery-smoke-cart.git",
+    "discover_issue": true,
+    "test_command": "pytest",
+    "test_timeout": 30,
+    "max_steps": 12
+  },
+  {
+    "task_id": "local_cart_smoke",
+    "repo_path": "sandbox_projects/external_smoke",
+    "discover_issue": true,
+    "test_command": "pytest",
+    "test_timeout": 30,
+    "max_steps": 12
+  },
+  {
+    "task_id": "github_slugify_seeded",
+    "repo_url": "https://github.com/36-gift/RepoFix-seeded-python-slugify.git",
+    "discover_issue": true,
+    "seed_patches": [
+      {
+        "file_path": "slugify/slugify.py",
+        "old_text": "    if lowercase:\n        text = text.lower()\n",
+        "new_text": "    if lowercase or stopwords:\n        text = text.lower()\n"
+      }
+    ],
+    "setup_commands": [
+      "python -m pip install -e ."
+    ],
+    "test_command": "python -m unittest test.TestSlugify.test_stopword_removal_casesensitive test.TestSlugifyUnicode.test_stopword_removal_casesensitive",
+    "test_timeout": 60,
+    "setup_timeout": 180,
+    "max_steps": 20
+  }
+]

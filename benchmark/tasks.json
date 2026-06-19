@@ -1,0 +1,123 @@
+[
+  {
+    "task_id": "calc_001",
+    "category": "single_file_logic",
+    "repo": "sandbox_projects/calculator",
+    "issue": "add 函数在输入字符串数字时应返回数字相加结果，例如 add('1', '2') 应返回 3。",
+    "test_command": "pytest",
+    "search_keywords": ["add"],
+    "expected_files": ["calculator.py"],
+    "buggy_files": {
+      "calculator.py": "def add(a, b):\n    return a + b\n"
+    },
+    "patch": {
+      "file_path": "calculator.py",
+      "old_text": "def add(a, b):\n    return a + b\n",
+      "new_text": "def add(a, b):\n    return int(a) + int(b)\n"
+    }
+  },
+  {
+    "task_id": "string_002",
+    "category": "single_file_logic",
+    "repo": "sandbox_projects/string_utils",
+    "issue": "unique_items 应该去重并保留元素首次出现的顺序，例如 ['b', 'a', 'b'] 应返回 ['b', 'a']，不能排序。",
+    "test_command": "pytest",
+    "search_keywords": ["unique_items"],
+    "expected_files": ["text_utils.py"],
+    "buggy_files": {
+      "text_utils.py": "def unique_items(items):\n    return sorted(set(items))\n"
+    },
+    "patch": {
+      "file_path": "text_utils.py",
+      "old_text": "def unique_items(items):\n    return sorted(set(items))\n",
+      "new_text": "def unique_items(items):\n    seen = set()\n    result = []\n    for item in items:\n        if item not in seen:\n            seen.add(item)\n            result.append(item)\n    return result\n"
+    }
+  },
+  {
+    "task_id": "multi_003",
+    "category": "multi_file_call",
+    "repo": "sandbox_projects/multi_file_service",
+    "issue": "build_welcome_message 通过 service.py 调用 utils.py，欢迎语需要包含用户姓名和 id，格式为 Welcome, Ada (#42)!。bug 在被调用的格式化函数里。",
+    "test_command": "pytest",
+    "search_keywords": ["build_welcome_message", "format_user"],
+    "expected_files": ["service.py", "utils.py"],
+    "buggy_files": {
+      "service.py": "from utils import format_user\n\n\ndef build_welcome_message(user):\n    return f\"Welcome, {format_user(user)}!\"\n",
+      "utils.py": "def format_user(user):\n    return user[\"name\"]\n"
+    },
+    "patch": {
+      "file_path": "utils.py",
+      "old_text": "def format_user(user):\n    return user[\"name\"]\n",
+      "new_text": "def format_user(user):\n    return f\"{user['name']} (#{user['id']})\"\n"
+    }
+  },
+  {
+    "task_id": "exception_004",
+    "category": "exception_handling",
+    "repo": "sandbox_projects/exception_handling",
+    "issue": "load_config 读取 JSON 配置时，如果文件不存在或 JSON 格式错误，应返回空字典 {}，不能抛异常。",
+    "test_command": "pytest",
+    "search_keywords": ["load_config"],
+    "expected_files": ["config_reader.py"],
+    "buggy_files": {
+      "config_reader.py": "import json\n\n\ndef load_config(path):\n    with open(path, \"r\", encoding=\"utf-8\") as f:\n        return json.load(f)\n"
+    },
+    "patch": {
+      "file_path": "config_reader.py",
+      "old_text": "import json\n\n\ndef load_config(path):\n    with open(path, \"r\", encoding=\"utf-8\") as f:\n        return json.load(f)\n",
+      "new_text": "import json\n\n\ndef load_config(path):\n    try:\n        with open(path, \"r\", encoding=\"utf-8\") as f:\n            return json.load(f)\n    except (FileNotFoundError, json.JSONDecodeError):\n        return {}\n"
+    }
+  },
+  {
+    "task_id": "cli_005",
+    "category": "cli_tool",
+    "repo": "sandbox_projects/cli_csv",
+    "issue": "命令 python app.py --input data.csv 应输出所有 amount 的数字总和 total=30，现在把 CSV 字段当字符串拼接了。",
+    "test_command": "pytest",
+    "search_keywords": ["total_amount", "amount"],
+    "expected_files": ["app.py"],
+    "buggy_files": {
+      "app.py": "import argparse\nimport csv\n\n\ndef total_amount(path):\n    total = \"\"\n    with open(path, newline=\"\", encoding=\"utf-8\") as f:\n        for row in csv.DictReader(f):\n            total += row[\"amount\"]\n    return total\n\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--input\", required=True)\n    args = parser.parse_args()\n    print(f\"total={total_amount(args.input)}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+    },
+    "patch": {
+      "file_path": "app.py",
+      "old_text": "def total_amount(path):\n    total = \"\"\n    with open(path, newline=\"\", encoding=\"utf-8\") as f:\n        for row in csv.DictReader(f):\n            total += row[\"amount\"]\n    return total\n",
+      "new_text": "def total_amount(path):\n    total = 0\n    with open(path, newline=\"\", encoding=\"utf-8\") as f:\n        for row in csv.DictReader(f):\n            total += int(row[\"amount\"])\n    return total\n"
+    }
+  },
+  {
+    "task_id": "config_006",
+    "category": "config_reading",
+    "repo": "sandbox_projects/config_loader",
+    "issue": "load_timeout 应从 config.json 的 app.timeout 读取超时时间。当前配置是嵌套结构，不是顶层 timeout。",
+    "test_command": "pytest",
+    "search_keywords": ["load_timeout", "timeout"],
+    "expected_files": ["settings.py", "config.json"],
+    "buggy_files": {
+      "settings.py": "import json\nfrom pathlib import Path\n\n\ndef load_timeout(config_path=None):\n    path = Path(config_path or \"config.json\")\n    data = json.loads(path.read_text(encoding=\"utf-8\"))\n    return data[\"timeout\"]\n",
+      "config.json": "{\n  \"app\": {\n    \"timeout\": 30\n  }\n}\n"
+    },
+    "patch": {
+      "file_path": "settings.py",
+      "old_text": "def load_timeout(config_path=None):\n    path = Path(config_path or \"config.json\")\n    data = json.loads(path.read_text(encoding=\"utf-8\"))\n    return data[\"timeout\"]\n",
+      "new_text": "def load_timeout(config_path=None):\n    path = Path(config_path or \"config.json\")\n    data = json.loads(path.read_text(encoding=\"utf-8\"))\n    return data[\"app\"][\"timeout\"]\n"
+    }
+  },
+  {
+    "task_id": "issue_007",
+    "category": "issue_clear_without_file_hint",
+    "repo": "sandbox_projects/issue_only_discount",
+    "issue": "apply_discount(price, percent) 中 percent 表示百分比，不是直接减去金额。例如 200 打 10% 折扣应该得到 180。",
+    "test_command": "pytest",
+    "search_keywords": ["discount", "percent"],
+    "expected_files": [],
+    "buggy_files": {
+      "discount.py": "def apply_discount(price, percent):\n    return price - percent\n"
+    },
+    "patch": {
+      "file_path": "discount.py",
+      "old_text": "def apply_discount(price, percent):\n    return price - percent\n",
+      "new_text": "def apply_discount(price, percent):\n    return price * (1 - percent / 100)\n"
+    }
+  }
+]

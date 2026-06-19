@@ -203,6 +203,14 @@ cython_debug/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
 
+# Imported external repositories for local agent runs
+sandbox_projects/imported/
+
+# Local benchmark run artifacts
+benchmark/results.jsonl
+benchmark/trajectories/
+logs/
+
 # Ruff stuff:
 .ruff_cache/
 

@@ -1,0 +1,61 @@
+[
+  {
+    "task_id": "github_slugify_seeded_medium",
+    "enabled": true,
+    "repo_url": "https://github.com/36-gift/RepoFix-seeded-python-slugify.git",
+    "discover_issue": true,
+    "seed_patches": [
+      {
+        "file_path": "slugify/slugify.py",
+        "old_text": "    if lowercase:\n        text = text.lower()\n",
+        "new_text": "    if lowercase or stopwords:\n        text = text.lower()\n"
+      }
+    ],
+    "setup_commands": [
+      "python -m pip install -e ."
+    ],
+    "test_command": "python -m unittest test.TestSlugify.test_stopword_removal_casesensitive test.TestSlugifyUnicode.test_stopword_removal_casesensitive",
+    "test_timeout": 60,
+    "setup_timeout": 180,
+    "max_steps": 20
+  },
+  {
+    "task_id": "github_humanize_seeded_template",
+    "enabled": false,
+    "repo_url": "https://github.com/36-gift/RepoFix-seeded-humanize.git",
+    "discover_issue": true,
+    "setup_commands": [
+      "python -m pip install -e ."
+    ],
+    "test_command": "python -m pytest tests",
+    "test_timeout": 120,
+    "setup_timeout": 240,
+    "max_steps": 24
+  },
+  {
+    "task_id": "github_click_seeded_template",
+    "enabled": false,
+    "repo_url": "https://github.com/36-gift/RepoFix-seeded-click.git",
+    "discover_issue": true,
+    "setup_commands": [
+      "python -m pip install -e ."
+    ],
+    "test_command": "python -m pytest tests/test_utils.py tests/test_parser.py",
+    "test_timeout": 180,
+    "setup_timeout": 300,
+    "max_steps": 28
+  },
+  {
+    "task_id": "github_packaging_seeded_template",
+    "enabled": false,
+    "repo_url": "https://github.com/36-gift/RepoFix-seeded-packaging.git",
+    "discover_issue": true,
+    "setup_commands": [
+      "python -m pip install -e ."
+    ],
+    "test_command": "python -m pytest tests/test_version.py tests/test_specifiers.py",
+    "test_timeout": 180,
+    "setup_timeout": 300,
+    "max_steps": 28
+  }
+]
